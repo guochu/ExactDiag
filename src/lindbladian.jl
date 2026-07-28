@@ -36,14 +36,7 @@ function Lindbladian(ht::AbstractVector{<:TimeDependentOperator}, dissipators::V
 	isempty(ht) && throw(ArgumentError("ht can not be empty"))
 	return Lindbladian(zero(ht[1]), ht, dissipators)
 end
-function Lindbladian(h::Hamiltonian, dissipators::Vector)
-	if isnothing(h.hc)
-		return Lindbladian(h.ht, dissipators)
-	else
-		return Lindbladian(h.hc, h.ht, dissipators)
-	end
-end 
-
+Lindbladian(h::Hamiltonian, dissipators::Vector) = Lindbladian(h.hc, h.ht, dissipators)
 
 Base.size(s::Lindbladian, i::Int) = begin
     l = size(s.hc, i)

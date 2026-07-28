@@ -25,11 +25,15 @@ Base.:*(h::TimeDependentOperator, r::Number) = TimeDependentOperator(r .* h.op, 
 Base.:*(r::Number, h::TimeDependentOperator) = h * r
 Base.zero(h::TimeDependentOperator) = zero(h.op)
 
-struct Hamiltonian{M1<:TimeDependentOperator, M2<:Union{AbstractMatrix, Nothing}}
+struct Hamiltonian{M1<:TimeDependentOperator, M2<:AbstractMatrix}
 	ht::Vector{M1}
 	hc::M2
 end
-function Hamiltonian(hc::AbstractMatrix, ht::AbstractVector{<:TimeDependentOperator}) 
+function Hamiltonian(hc::AbstractMatrix, ht::AbstractVector)
+	if isempty(ht)
+		ht2 =  Vector{TimeDependentOperator{typeof(hc)}}()
+		return Hamiltonian(ht2, hc)
+	end
 	for item in ht
 		(size(item.op) == size(hc)) || throw(DimensionMismatch("ht hc matrix size mismatch"))
 	end
@@ -40,51 +44,21 @@ function Hamiltonian(hc::AbstractMatrix, ht::AbstractVector{<:TimeDependentOpera
 	end
 	return Hamiltonian(ht, hc)
 end
-
-function Hamiltonian(hc::AbstractMatrix) 
-	ht = Vector{TimeDependentOperator{typeof(hc)}}()
-	return Hamiltonian(hc, ht)
-end
+Hamiltonian(hc::AbstractMatrix) = Hamiltonian(hc, [])
 function Hamiltonian(ht::AbstractVector{<:TimeDependentOperator})
 	isempty(ht) && throw(ArgumentError("ht can not be empty"))
-	return Hamiltonian(ht, nothing)
+	return Hamiltonian(zero(ht[1]), ht)
 end 
 
 
-function Base.size(h::Hamiltonian, args...)
-	if isnothing(h.hc)
-		return size(h.ht[1], args...)
-	else
-		return size(h.hc, args...)
-	end
-end 
-Base.eltype(::Type{Hamiltonian{M1, M2}}) where {M1, M2} = eltype(M1)
-function Base.complex(h::Hamiltonian)
-	if isnothing(h.hc)
-		return Hamiltonian(complex.(h.ht))
-	else
-		return Hamiltonian(complex(h.hc), complex.(h.ht))
-	end
-end
-function Base.zero(h::TimeDependentOperator) 
-	if isnothing(h.hc)
-		return zero(h.ht[1])
-	else
-		return zero(h.hc)
-	end
-end
+Base.size(h::Hamiltonian, args...) = size(h.hc, args...)
 
-function Base.:*(h::Hamiltonian, r::Number) 
-	if isconstant(h)
-		return Hamiltonian(r .* h.hc)
-	else
-		if isnothing(h.hc)
-			return Hamiltonian([item * r for item in h.ht])
-		else
-			return Hamiltonian([item * r for item in h.ht], r .* h.hc)
-		end
-	end
-end
+Base.eltype(::Type{Hamiltonian{M1, M2}}) where {M1, M2} = eltype(M2)
+Base.complex(h::Hamiltonian) = Hamiltonian(complex(h.hc), complex.(h.ht))
+
+Base.zero(h::TimeDependentOperator) = zero(h.hc)
+
+Base.:*(h::Hamiltonian, r::Number) = Hamiltonian(r .* h.hc, [item * r for item in h.ht])
 Base.:*(r::Number, h::Hamiltonian) = h * r
 
 isconstant(h::Hamiltonian) = isempty(h.ht)
@@ -94,11 +68,7 @@ isconstant(h::Hamiltonian) = isempty(h.ht)
 
 
 function (h::Hamiltonian)(t::Real)
-	if isnothing(h.hc)
-		m = zero(h)
-	else
-		m = copy(h.hc)
-	end
+	m = copy(h.hc)
 	for ht in h.ht
 		op, coef = ht.op, ht.coef(t)
 		axpy!(coef, op, m)
@@ -113,9 +83,7 @@ function apply!(b::AbstractVector, m::Hamiltonian, a::AbstractVector)
 end
 
 function apply!(y::AbstractVector, h::Hamiltonian, t::Real, x::AbstractVector)
-	if !isnothing(h.hc)
-		mul!(y, h.hc, x)
-	end
+	mul!(y, h.hc, x)
 	for ht in h.ht
 	    op, coef = ht.op, ht.coef(t)
 	    # y += v * (item * x)
