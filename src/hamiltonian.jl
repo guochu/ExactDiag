@@ -56,7 +56,7 @@ Base.size(h::Hamiltonian, args...) = size(h.hc, args...)
 Base.eltype(::Type{Hamiltonian{M1, M2}}) where {M1, M2} = eltype(M2)
 Base.complex(h::Hamiltonian) = Hamiltonian(complex(h.hc), complex.(h.ht))
 
-Base.zero(h::TimeDependentOperator) = zero(h.hc)
+Base.zero(h::Hamiltonian) = zero(h.hc)
 
 Base.:*(h::Hamiltonian, r::Number) = Hamiltonian(r .* h.hc, [item * r for item in h.ht])
 Base.:*(r::Number, h::Hamiltonian) = h * r

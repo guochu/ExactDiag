@@ -8,6 +8,7 @@ export groundstate, steadystate
 
 
 export pauli_matrices, spin_half_matrices, boson_matrices
+export spin_state_up, spin_state_down, fock_state
 
 
 using LinearAlgebra: mul!, axpy!, rmul!, ishermitian, tr
