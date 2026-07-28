@@ -1,8 +1,8 @@
 
 
-struct Lindbladian{M1<:AbstractMatrix, M2<:AbstractMatrix, M3<:AbstractMatrix, M4<:AbstractMatrix}
-	ht::Vector{TimeDependentOperator{M2}}
-	hc::M1
+struct Lindbladian{M1<:TimeDependentOperator, M2<:AbstractMatrix, M3<:AbstractMatrix, M4<:AbstractMatrix}
+	ht::Vector{M1}
+	hc::M2
 	dissipators::Vector{M3}
 	workspace::M4
 end
@@ -10,13 +10,7 @@ end
 Base.eltype(::Type{Lindbladian{M1, M2, M3, M4}}) where {M1, M2, M3, M4} = eltype(M4)
 isconstant(h::Lindbladian) = isempty(h.ht)
 
-Base.size(s::Lindbladian, i::Int) = begin
-    l = size(s.hc, i)
-    return l * l
-end
-Base.size(s::Lindbladian) = size(s, 1), size(s, 2)
-
-function Lindbladian(hc::AbstractMatrix, ht::AbstractVector{<:TimeDependentOperator}, dissipators::Vector)
+function Lindbladian(hc::AbstractMatrix, ht::AbstractVector{<:TimeDependentOperator}, dissipators::Vector) 
 	for item in ht
 		(size(item.op) == size(hc)) || throw(DimensionMismatch("ht hc matrix size mismatch"))
 	end
@@ -31,14 +25,32 @@ function Lindbladian(hc::AbstractMatrix, ht::AbstractVector{<:TimeDependentOpera
 	    m -= jump' * jump
 	end
 	workspace = zeros(eltype(m), size(m))
-	return Lindbladian(ht, m, dissipators, workspace)
+	return Lindbladian(complex.(ht), m, complex.(dissipators), workspace)
 end
 
 function Lindbladian(hc::AbstractMatrix, dissipators::Vector)
 	ht = Vector{TimeDependentOperator{typeof(hc)}}()
 	return Lindbladian(hc, ht, dissipators)
 end
-Lindbladian(h::Hamiltonian, dissipators::Vector) = Lindbladian(h.hc, h.ht, dissipators)
+function Lindbladian(ht::AbstractVector{<:TimeDependentOperator}, dissipators::Vector)
+	isempty(ht) && throw(ArgumentError("ht can not be empty"))
+	return Lindbladian(zero(ht[1]), ht, dissipators)
+end
+function Lindbladian(h::Hamiltonian, dissipators::Vector)
+	if isnothing(h.hc)
+		return Lindbladian(h.ht, dissipators)
+	else
+		return Lindbladian(h.hc, h.ht, dissipators)
+	end
+end 
+
+
+Base.size(s::Lindbladian, i::Int) = begin
+    l = size(s.hc, i)
+    return l * l
+end
+Base.size(s::Lindbladian) = size(s, 1), size(s, 2)
+
 
 # function Lindbladian(h::Hamiltonian, dissipators::Vector) 
 # 	m = -im*h.hc
