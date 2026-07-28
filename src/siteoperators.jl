@@ -10,6 +10,14 @@ spin_down() = [1. 0; 0 0]
 # spin states 
 spin_state_up() = [0., 1]
 spin_state_down() = [1., 0]
+function spin_state(s::Symbol)
+	(s in (:up, :down)) || throw(ArgumentError("spin state must be :up or :down"))
+	if s == :up
+		return spin_state_up()
+	else
+		return spin_state_down()
+	end
+end
 
 pauli_matrices() = spin_x(), spin_y(), spin_z()
 
