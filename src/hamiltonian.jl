@@ -101,6 +101,13 @@ function (h::Hamiltonian)(t::Real, x::AbstractVector)
 	return apply!(similar(x), h, t, x)
 end
 
+expectation(m::AbstractMatrix, v::AbstractVector) = dot(v, m, v)
+expectation(m::AbstractMatrix, v::AbstractMatrix) = tr(m * v)
+function expectation(h::Hamiltonian, v::AbstractVector)
+	isconstant(h) || throw(ArgumentError("expectation only applies for constant Hamiltonian"))
+	return expectation(h.hc, v)
+end
+
 
 function matrix(h::Hamiltonian)
     isconstant(h) || error("can not convert non-constant Hamiltonian into a constant matrix")
