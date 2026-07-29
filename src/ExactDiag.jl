@@ -1,7 +1,7 @@
 module ExactDiag
 
 
-export TimeDependentOperator, Hamiltonian, isconstant, matrix, Lindbladian, expectation
+export TimeDependentOperator, Hamiltonian, isconstant, matrix, Lindbladian, Liouvillian, expectation
 export TimeEvoAlg, RungKuttaAlg, RungKutta1, RungKutta2, RungKutta4, KrylovExpm
 export timeevo, timeevo!
 export groundstate, steadystate

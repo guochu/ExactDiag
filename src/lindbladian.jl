@@ -56,6 +56,7 @@ Base.size(s::Lindbladian) = size(s, 1), size(s, 2)
 # 	return Lindbladian(h.ht, m, dissipators, workspace)
 # end
 Lindbladian(h::Hamiltonian) = Lindbladian(h, [])
+Liouvillian(h::Hamiltonian) = Lindbladian(h)
 
 # function (m::Lindbladian)(t::Real)
 # 	h2 = Hamiltonian(m.hc, m.ht)
