@@ -37,7 +37,6 @@ function Lindbladian(ht::AbstractVector{<:TimeDependentOperator}, dissipators::V
 	return Lindbladian(zero(ht[1]), ht, dissipators)
 end
 Lindbladian(h::Hamiltonian, dissipators::Vector) = Lindbladian(h.hc, h.ht, dissipators)
-Lindbladian(h::Hamiltonian) = Lindbladian(h, [])
 
 Base.size(s::Lindbladian, i::Int) = begin
     l = size(s.hc, i)
