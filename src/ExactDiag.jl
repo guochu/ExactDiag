@@ -12,7 +12,7 @@ export pauli_matrices, spin_half_matrices, boson_matrices
 export spin_state, fock_state
 
 
-using LinearAlgebra: mul!, axpy!, rmul!, ishermitian, tr, dot
+using LinearAlgebra: mul!, axpy!, rmul!, ishermitian, tr, dot, norm
 using KrylovKit
 
 

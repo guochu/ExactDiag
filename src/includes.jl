@@ -1,4 +1,4 @@
-using LinearAlgebra: mul!, axpy!, rmul!, ishermitian, tr, dot
+using LinearAlgebra: mul!, axpy!, rmul!, ishermitian, tr, dot, norm
 using KrylovKit
 using Random
 
