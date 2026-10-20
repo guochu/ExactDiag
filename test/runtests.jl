@@ -1,7 +1,5 @@
-include("../src/includes.jl")
-
-using Test, SparseArrays, LinearAlgebra
-
+using ExactDiag
+using Test, SparseArrays, LinearAlgebra, Random
 
 include("hamiltonian.jl")
 include("lindbladian.jl")
