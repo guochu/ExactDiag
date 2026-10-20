@@ -7,7 +7,7 @@ end
 
 function TimeDependentOperator(m::AbstractMatrix, f::Function)
 	r = f(0)
-	if (!isreal(r)) && isreal(eltype(m))
+	if (!isreal(r)) && isreal(m)
 		m = complex(m)
 	end
 	return TimeDependentOperator(f, m)
