@@ -5,6 +5,7 @@ export TimeDependentOperator, Hamiltonian, isconstant, matrix, Lindbladian, Liou
 export TimeEvoAlg, RungKuttaAlg, RungKutta1, RungKutta2, RungKutta4, KrylovExpm
 export timeevo, timeevo!
 export groundstate, steadystate
+export mcwf_trajectory
 
 
 export pauli_matrices, spin_half_matrices, boson_matrices
@@ -20,6 +21,7 @@ include("hamiltonian.jl")
 include("lindbladian.jl")
 include("timeevo.jl")
 include("eigenstates.jl")
+include("mcwf.jl")
 
 include("siteoperators.jl")
 end
