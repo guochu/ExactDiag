@@ -9,7 +9,6 @@
 #      ψ ← C_jψ/‖C_jψ‖，重抽 p；否则不重归一（范数携带下一次跳变信息）；
 #   3. 输出时刻返回归一化副本。
 # 跳变时刻取步末（偏差 O(dt)）：dt 需满足 max(2⟨C†C⟩)·dt << 1。
-using Random
 
 """
     mcwf_trajectory(L::Lindbladian, ψ0, times; dt, rng=default_rng()) -> Vector{Vector{ComplexF64}}
